@@ -1,17 +1,17 @@
 import { createContext, useState, useEffect } from 'react'
 import { toast } from 'react-toastify'
-import { categorias as categoriasDB} from '../data/categorias'
-//import axios from 'axios'
+//import { categorias as categoriasDB} from '../data/categorias'
 import clienteAxios from '../config/axios'
 
 const QuioscoContext = createContext();
 
 const QuioscoProvider = ({children}) => {
 
-   // const [categorias, setCategorias] = useState(categoriasDB);
     const [categorias, setCategorias] = useState([]);
 
-   // const [categoriaActual, setCategoriaActual] = useState(categorias[0]);
+    const [tokenExit, setTokenExist] = useState(false);
+
+
     const [categoriaActual, setCategoriaActual] = useState({});
 
     const [modal, setModal] = useState(false);
@@ -31,34 +31,59 @@ const QuioscoProvider = ({children}) => {
   
       },[pedido])
 
-
+    //setCategoriaActual(1)
     const obtenerCategorias = async() => {
+
+        if(!tokenExit) return;
+
         try {                    
             const token = localStorage.getItem('AUTH_TOKEN')
+            
             const { data } = await clienteAxios('/api/categorias',{
                 headers: {
                     Authorization: `Bearer ${token}`
                 }
             })
-          //const { data } = await axios(`http://127.0.0.1:8000/api/categorias`)
             setCategorias(data.data)
-            setCategoriaActual(data.data[0])
-          //  console.log(data.data)
+           
+           // setCategoriaActual(data.data[0])
+           
         } catch (error) {
-            console.log(error)
+           // console.log(error)
         }
 
     }  
 
-    useEffect(() => {
-        obtenerCategorias();
-     },[])
+
+     useEffect(() => {
+
+        const token = localStorage.getItem('AUTH_TOKEN')
+        if(token){
+          
+            setTokenExist(true); 
+          
+        }
+
+        if(tokenExit){                      
+            obtenerCategorias();
+        
+
+            const interval = setInterval(() => {
+                obtenerCategorias();
+            }, 10000);
+       
+    
+            // Limpiar el intervalo cuando el componente se desmonte
+            return () => clearInterval(interval);
+        }
+      }, [tokenExit]); // El array vacío asegura que se ejecute una vez al montar el componente
+    
 
 
     const handleClickCategoria = id => {
         const categoria = categorias.filter(categoria => categoria.id == id)[0]
         setCategoriaActual(categoria)
-        console.log(categoriaActual);
+        
     }
 
     const handleClickModal = () => {
@@ -69,12 +94,19 @@ const QuioscoProvider = ({children}) => {
         setProducto(producto)
     }
 
+    const handleSetToken = tokenExit => {
+        //console.log('en handleSetToken',tokenExit );
+        setTokenExist(tokenExit)
+    }
+
+    
+
     const handleAgregarPedido = ({categoria_id,  ...producto}) => {
         //Esto le saca los campos categoria_id y imagen al objeto producto
-       console.log(producto);
+      
 
        if(pedido.some(pedidoState => pedidoState.id === producto.id)){
-        console.log('Si esta en el pedido');
+       
         const pedidoActualizado = pedido.map(pedidoState => pedidoState.id ===  producto.id
         ? producto : pedidoState)
         setPedido(pedidoActualizado)
@@ -134,7 +166,7 @@ const QuioscoProvider = ({children}) => {
             },3000);
 
         } catch (error) {
-            console.log(error);
+           // console.log(error);
             
         }
     }
@@ -152,7 +184,7 @@ const handleClickCompletarPedido = async id => {
 
     
    } catch (error) {
-    console.log(error)
+   // console.log(error)
    }
 }
 
@@ -168,7 +200,7 @@ const handleClickProductoAgotado = async id => {
 
     
    } catch (error) {
-    console.log(error)
+    //console.log(error)
    }
 }
 
@@ -189,7 +221,9 @@ const handleClickProductoAgotado = async id => {
             total,
             handleSubmitNuevaOrden,
             handleClickCompletarPedido,
-            handleClickProductoAgotado
+            handleClickProductoAgotado,
+            handleSetToken
+                       
          }}
 
         >{children}</QuioscoContext.Provider>

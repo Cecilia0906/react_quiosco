@@ -13,7 +13,7 @@ export default function Registro(){
 
   const [errores, setErrores] = useState([]);
 
-  const { registro } = useAuth({ middleware:'guest', url:'/' })
+  const { registro ,loading } = useAuth({ middleware:'guest', url:'/' })
 
   const handleSubmit = async e => {
     e.preventDefault()
@@ -27,7 +27,7 @@ export default function Registro(){
 
    registro(datos,setErrores)
 
-    console.log(datos);
+    
   }
 
 
@@ -115,6 +115,7 @@ export default function Registro(){
          value="Crear cuenta"
          className="bg-indigo-600 hover:bg-indigo-800 text-white w-full mt-5 p-3 uppercase font-bold cursor-pointer"
          />
+          {loading && <p>Cargando...</p>}
          </form>
        </div>
        <nav className="mt-5">

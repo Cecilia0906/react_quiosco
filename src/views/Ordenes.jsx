@@ -18,9 +18,9 @@ export default function Ordenes(){
 
       const { handleClickCompletarPedido } = useQuiosco();
 
-      console.log(data?.data);
-      console.log(error);
-      console.log(isLoading);
+     // console.log(data?.data);
+     // console.log(error);
+     // console.log(isLoading);
      
 
      
@@ -34,7 +34,7 @@ export default function Ordenes(){
           <p className='text-2xl my-10'>
             Administra las ordenes desde aqui.
           </p>
-          <div class="grid grid-cols-2 gap-5">
+          <div className="grid grid-cols-2 gap-5">
             {data.data.data.map(pedido => (
                <div key={pedido.id} className="p-5 bg-white shadow space-y-2 border-b">
                      <p className="text-xl font-bold text-slate-600">

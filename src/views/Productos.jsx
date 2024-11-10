@@ -16,7 +16,7 @@ export default function Productos(){
 
   if(isLoading) return 'Cargando...'
 
-  console.log(data.data);
+  
 
     return (
     

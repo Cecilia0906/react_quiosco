@@ -7,9 +7,9 @@ import './index.css'
 
 
 createRoot(document.getElementById('root')).render(
-
-    <QuioscoProvider>
-       <RouterProvider router={router} />
-    </QuioscoProvider>   
- 
+    <StrictMode>
+        <QuioscoProvider>
+           <RouterProvider router={router} />
+        </QuioscoProvider>  
+    </StrictMode>  
 )

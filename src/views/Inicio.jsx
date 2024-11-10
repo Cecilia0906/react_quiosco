@@ -1,20 +1,26 @@
 // import { productos as data } from '../data/productos'
+import {  useEffect } from 'react'
 import useSWR from 'swr'
 import Producto from '../components/Producto'
 import clienteAxios from '../config/axios'
+//import clienteAxios from  '/http://localhost:5173/config/axios'
 import  useQuiosco  from '../hooks/useQuiosco'
+
 
 
 export default function Inicio(){
 
 
    const { categoriaActual } = useQuiosco()
+   //const [categoriaActual, setCategoriaActual] = useState(categorias[0]);
 
    //Consulta SWR
 
    const token = localStorage.getItem('AUTH_TOKEN')
+   
 
-   const fetcher = () => clienteAxios('/api/productos',{
+
+   const fetcher = () => clienteAxios(token ? '/api/productos' : null,{
       headers: {
          Authorization: `Bearer ${token}`
       }
@@ -22,21 +28,26 @@ export default function Inicio(){
    }).then(data =>data.data)
  
      
-   
-   const { data, error, isLoading } = useSWR('/api/productos', fetcher,{
-      refreshInterval: 1000
-   })
-  
-   console.log(data);
-   console.log(error);
-   console.log(isLoading);
+ 
+   const { data = { data: [] }, error, isLoading } = useSWR('/api/productos', fetcher,{ refreshInterval:1000})
+     
+
+ // console.log(data);
+  // console.log(error);
+ //  console.log(isLoading);
 
 
  
    if(isLoading) return 'Cargando'
-   const productos = data.data.filter(producto => producto.categoria_id === categoriaActual.id)
 
-  
+   if (error) return 'Error al cargar los datos.';
+ 
+   // const productos = data?.data ? data.data.filter(producto => producto.categoria_id === categoriaActual.id) : [];
+   //const productos = data.data.filter(producto => producto.categoria_id === categoriaActual.id)
+   const productos = data.data.filter(producto => producto.categoria_id === (categoriaActual?.id ?? 1))
+
+ 
+
     return (
     
        <>

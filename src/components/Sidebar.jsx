@@ -7,7 +7,9 @@ export default function Sidebar(){
     const { categorias } = useQuiosco()
     const { logout, user } = useAuth({ middleware:'auth' })
 
-   
+
+
+    if (!categorias.length) return <p>Cargando categorías...</p>;
 
     return (
     
